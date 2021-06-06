@@ -77,8 +77,9 @@ Not recommended, as they're not maintained officially. Tend to lag behind and st
 Using ImGui-SFML in your code
 ---
 
-- Call `ImGui::SFML::Init` and pass your `sf::Window` + `sf::RenderTarget` or `sf::RenderWindow` there. You can create your font atlas and pass the pointer in Init too, otherwise the default internal font atlas will be created for you.
+- Call `ImGui::SFML::Init` and pass your `sf::Window` + `sf::RenderTarget` or `sf::RenderWindow` there. You can create your font atlas and pass the pointer in Init too, otherwise the default internal font atlas will be created for you. Do this for each window you want to draw ImGui on.
 - For each iteration of a game loop:
+    - Call `ImGui::SFML::SetCurrentWindow(window)` to make sure you tell ImGui-SFML the window you want to draw on next. This needs to be called before polling events. You don't need to do this if you don't need to support multiple windows.
     - Poll and process events:
 
         ```cpp
@@ -95,6 +96,8 @@ Using ImGui-SFML in your code
     - Call `ImGui::SFML::Render(window)`
 
 - Call `ImGui::SFML::Shutdown()` after `window.close()` has been called
+    - Use `ImGui::SFML::Shutdown(window)` overload if you want to shutdown a different window than the window previously set with `ImGui::SFML::SetCurrentWindow(window)`. This works for current window as well.
+    - Calling either shutdown function will result in changing the current window to last registered valid window (with `ImGui::SFML::Init`). If no windows are available, current window is set to `NULL`.
 
 **If you only draw ImGui widgets without any SFML stuff, then you'll have to call window.resetGLStates() before rendering anything. You only need to do it once.**
 
